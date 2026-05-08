@@ -6,6 +6,14 @@
   "description": "China region cascade data with adapters for Ant Design & Naive UI",
   "author": "TinyForged",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tinyforged/china-region-cascade.git"
+  },
+  "homepage": "https://github.com/tinyforged/china-region-cascade#readme",
+  "bugs": {
+    "url": "https://github.com/tinyforged/china-region-cascade/issues"
+  },
   "keywords": [
     "china",
     "region",
