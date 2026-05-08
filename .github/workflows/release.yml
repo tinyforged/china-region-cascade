@@ -37,12 +37,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upgrade npm and fix NODE_AUTH_TOKEN
-        run: |
-          npm install -g npm@latest
-          echo "NODE_AUTH_TOKEN=" >> $GITHUB_ENV
-
       - name: Publish to npm
-        run: pnpm -F "@tinyforged/china-region-cascade" publish --no-git-checks --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+          pnpm -F "@tinyforged/china-region-cascade" publish --no-git-checks --access public
