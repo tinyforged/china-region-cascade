@@ -30,7 +30,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: pnpm run build
+        run: pnpm -F "@tinyforged/china-region-cascade" build
 
       - name: Generate Changelog
         run: npx changelogithub
@@ -38,6 +38,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to npm
-        run: pnpm publish --no-git-checks --access public
+        run: pnpm -F "@tinyforged/china-region-cascade" publish --no-git-checks --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
