@@ -1,0 +1,59 @@
+{
+  "name": "@tinyforged/china-region-cascade",
+  "type": "module",
+  "version": "0.0.1",
+  "packageManager": "pnpm@11.0.8",
+  "description": "China region cascade data with adapters for Ant Design & Naive UI",
+  "author": "TinyForged",
+  "license": "MIT",
+  "keywords": [
+    "china",
+    "region",
+    "cascade",
+    "antd",
+    "naive-ui",
+    "province",
+    "city",
+    "area"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./antd": {
+      "import": "./dist/adapters/antd/index.js",
+      "require": "./dist/adapters/antd/index.cjs"
+    },
+    "./naive-ui": {
+      "import": "./dist/adapters/naive-ui/index.js",
+      "require": "./dist/adapters/naive-ui/index.cjs"
+    },
+    "./utils": {
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "province-city-china": "^8.5.8"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^8.2.0",
+    "eslint": "^10.3.0",
+    "eslint-plugin-format": "^2.0.1",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3"
+  }
+}
