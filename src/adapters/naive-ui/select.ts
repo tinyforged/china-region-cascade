@@ -18,7 +18,9 @@ export { hasThreeLevels } from '../../utils/select'
  * - 直辖市/港澳台：省 → 区（两级）
  */
 export const provinceOptions = getProvinces() as NaiveUiSelectOption[]
-export const getCitiesForSelect = (provinceCode: string): NaiveUiSelectOption[] =>
-  getCities(provinceCode) as NaiveUiSelectOption[]
-export const getAreasForSelect = (cityCode: string): NaiveUiSelectOption[] =>
-  getAreas(cityCode) as NaiveUiSelectOption[]
+export function getCitiesForSelect(provinceCode: string): NaiveUiSelectOption[] {
+  return getCities(provinceCode) as NaiveUiSelectOption[]
+}
+export function getAreasForSelect(cityCode: string): NaiveUiSelectOption[] {
+  return getAreas(cityCode) as NaiveUiSelectOption[]
+}

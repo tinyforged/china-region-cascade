@@ -1,3 +1,3 @@
 export { cascaderOptions, type NaiveUiCascaderOption } from './cascader'
-export { getAreasForSelect, getCitiesForSelect, hasThreeLevels, provinceOptions, type NaiveUiSelectOption } from './select'
-export { treeSelectOptions, type NaiveUiTreeSelectOption } from './tree-select'
+export { getAreasForSelect, getCitiesForSelect, hasThreeLevels, type NaiveUiSelectOption, provinceOptions } from './select'
+export { type NaiveUiTreeSelectOption, treeSelectOptions } from './tree-select'

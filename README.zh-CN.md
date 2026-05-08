@@ -52,9 +52,9 @@ import { cascaderOptions } from '@tinyforged/china-region-cascade/antd'
 ```
 
 ```tsx
+import { cascaderOptions } from '@tinyforged/china-region-cascade/antd'
 // React
 import { Cascader } from 'antd'
-import { cascaderOptions } from '@tinyforged/china-region-cascade/antd'
 
 <Cascader options={cascaderOptions} placeholder="请选择地区" />
 ```
@@ -207,13 +207,13 @@ watch(city, () => { area.value = null })
 import {
   findByCode,
   findByLabel,
-  getChildren,
-  getLabelsByCodes,
-  getCodesByLabels,
-  getProvinces,
-  getCities,
   getAreas,
+  getChildren,
+  getCities,
+  getCodesByLabels,
   getFlatChildren,
+  getLabelsByCodes,
+  getProvinces,
   hasThreeLevels,
 } from '@tinyforged/china-region-cascade/utils'
 ```
@@ -293,12 +293,12 @@ interface FlatOption {
 
 ## 导出
 
-| 子路径      | 导出内容                                                                  |
-| ----------- | ------------------------------------------------------------------------- |
-| `.`         | `regionOptions`、类型、所有工具函数                                       |
+| 子路径      | 导出内容                                                                   |
+| ----------- | -------------------------------------------------------------------------- |
+| `.`         | `regionOptions`、类型、所有工具函数                                        |
 | `/antd`     | `cascaderOptions`、`treeSelectOptions`、`provinceOptions`、Select 辅助函数 |
 | `/naive-ui` | `cascaderOptions`、`treeSelectOptions`、`provinceOptions`、Select 辅助函数 |
-| `/utils`    | 所有工具函数                                                              |
+| `/utils`    | 所有工具函数                                                               |
 
 ## 添加新的 UI 库
 

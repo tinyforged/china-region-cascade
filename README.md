@@ -54,9 +54,9 @@ import { cascaderOptions } from '@tinyforged/china-region-cascade/antd'
 ```
 
 ```tsx
+import { cascaderOptions } from '@tinyforged/china-region-cascade/antd'
 // React
 import { Cascader } from 'antd'
-import { cascaderOptions } from '@tinyforged/china-region-cascade/antd'
 
 <Cascader options={cascaderOptions} placeholder="Select region" />
 ```
@@ -207,13 +207,13 @@ Import from `@tinyforged/china-region-cascade/utils`:
 import {
   findByCode,
   findByLabel,
-  getChildren,
-  getLabelsByCodes,
-  getCodesByLabels,
-  getProvinces,
-  getCities,
   getAreas,
+  getChildren,
+  getCities,
+  getCodesByLabels,
   getFlatChildren,
+  getLabelsByCodes,
+  getProvinces,
   hasThreeLevels,
 } from '@tinyforged/china-region-cascade/utils'
 ```
