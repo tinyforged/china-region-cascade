@@ -1,0 +1,19 @@
+{
+  "name": "@tinyforged/china-region-cascade-play",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@tinyforged/china-region-cascade": "workspace:*",
+    "ant-design-vue": "^4.2.6",
+    "naive-ui": "^2.41.0",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.0",
+    "vite": "^6.3.0"
+  }
+}
