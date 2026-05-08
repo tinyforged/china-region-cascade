@@ -30,14 +30,19 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build
-        run: pnpm run build
+        run: pnpm -F "@tinyforged/china-region-cascade" build
 
       - name: Generate Changelog
         run: npx changelogithub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Upgrade npm and fix NODE_AUTH_TOKEN
+        run: |
+          npm install -g npm@latest
+          echo "NODE_AUTH_TOKEN=" >> $GITHUB_ENV
+
       - name: Publish to npm
-        run: pnpm -F @tinyforged/china-region-cascade publish --no-git-checks --no-verify-access --access public
+        run: pnpm -F "@tinyforged/china-region-cascade" publish --no-git-checks --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
