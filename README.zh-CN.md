@@ -4,27 +4,25 @@
 
 ---
 
-China administrative region cascade data with adapters for **Ant Design** (React & Vue), **Naive UI**, and more. Provides tree-structured data (`{ value, label, children }`), flat select data, and utility functions, built on top of [province-city-china](https://github.com/uiwjs/province-city-china).
+中国行政区划级联数据，提供 **Ant Design**（React & Vue）、**Naive UI** 等主流 UI 框架的适配器。基于 [province-city-china](https://github.com/uiwjs/province-city-china) 构建，提供树形数据、扁平列表和工具函数。
 
-## Features
+## 特性
 
-- **Cascader** — Nested tree data for cascader components
-- **TreeSelect** — Tree data with proper field mapping for tree-select components
-- **Separate Selects** — Flat province/city/area lists for independent dropdown selection
-- **Municipality-aware** — Automatically detects 2-level regions (Beijing, Shanghai, etc.) vs 3-level regions
-- **Utility Functions** — Find, convert, and navigate region data
-- **Tree-shakable** — Sub-path exports for minimal bundle size
-- **TypeScript** — Full type definitions included
+- **级联选择器 (Cascader)** — 嵌套树形数据，直接用于 Cascader 组件
+- **树选择器 (TreeSelect)** — 自动映射字段，适配 TreeSelect 组件
+- **分开下拉框 (Select)** — 扁平的省/市/区列表，用于独立联动选择
+- **直辖市感知** — 自动识别两级区域（北京、上海等）和三级区域
+- **工具函数** — 查找、转换、导航行政区划数据
+- **按需加载** — 子路径导出，支持 tree-shaking
+- **TypeScript** — 完整类型定义
 
-## Install
+## 安装
 
 ```bash
 pnpm add @tinyforged/china-region-cascade
-# or
-npm install @tinyforged/china-region-cascade
 ```
 
-## Quick Start
+## 快速开始
 
 ```ts
 import { regionOptions } from '@tinyforged/china-region-cascade'
@@ -37,11 +35,11 @@ import { regionOptions } from '@tinyforged/china-region-cascade'
 // ]
 ```
 
-## Adapters
+## 适配器
 
-### Ant Design — Cascader
+### Ant Design — 级联选择器
 
-Compatible with both `antd` (React) and `ant-design-vue` (Vue).
+兼容 `antd`（React）和 `ant-design-vue`（Vue）。
 
 ```vue
 <script setup>
@@ -49,7 +47,7 @@ import { cascaderOptions } from '@tinyforged/china-region-cascade/antd'
 </script>
 
 <template>
-  <a-cascader :options="cascaderOptions" placeholder="Select region" />
+  <a-cascader :options="cascaderOptions" placeholder="请选择地区" />
 </template>
 ```
 
@@ -58,10 +56,10 @@ import { cascaderOptions } from '@tinyforged/china-region-cascade/antd'
 import { Cascader } from 'antd'
 import { cascaderOptions } from '@tinyforged/china-region-cascade/antd'
 
-<Cascader options={cascaderOptions} placeholder="Select region" />
+<Cascader options={cascaderOptions} placeholder="请选择地区" />
 ```
 
-### Ant Design — TreeSelect
+### Ant Design — 树选择器
 
 ```vue
 <script setup>
@@ -69,12 +67,12 @@ import { treeSelectOptions } from '@tinyforged/china-region-cascade/antd'
 </script>
 
 <template>
-  <!-- treeSelectOptions maps label → title for Ant Design TreeSelect -->
-  <a-tree-select :tree-data="treeSelectOptions" placeholder="Select region" />
+  <!-- treeSelectOptions 已将 label 映射为 title，适配 Ant Design TreeSelect -->
+  <a-tree-select :tree-data="treeSelectOptions" placeholder="请选择地区" />
 </template>
 ```
 
-### Ant Design — Separate Selects
+### Ant Design — 分开下拉框
 
 ```vue
 <script setup>
@@ -105,24 +103,26 @@ watch(city, () => { area.value = undefined })
 </script>
 
 <template>
-  <a-select v-model:value="province" :options="provinceOptions" placeholder="Province" />
+  <a-select v-model:value="province" :options="provinceOptions" placeholder="省/直辖市" />
   <a-select
     v-if="isThreeLevel"
     v-model:value="city"
     :options="cityOptions"
     :disabled="!province"
-    placeholder="City"
+    placeholder="市"
   />
   <a-select
     v-model:value="area"
     :options="isThreeLevel ? areaOptions : cityOptions"
     :disabled="isThreeLevel ? !city : !province"
-    placeholder="District"
+    :placeholder="isThreeLevel ? '区/县' : '区'"
   />
 </template>
 ```
 
-### Naive UI — Cascader
+> **提示：** 直辖市（北京、上海、天津、重庆）和港澳台只有两级结构（省 → 区），`hasThreeLevels()` 返回 `false`，此时隐藏中间的「市」下拉框，直接显示「省 → 区」。
+
+### Naive UI — 级联选择器
 
 ```vue
 <script setup>
@@ -130,11 +130,11 @@ import { cascaderOptions } from '@tinyforged/china-region-cascade/naive-ui'
 </script>
 
 <template>
-  <n-cascader :options="cascaderOptions" placeholder="Select region" />
+  <n-cascader :options="cascaderOptions" placeholder="请选择地区" />
 </template>
 ```
 
-### Naive UI — TreeSelect
+### Naive UI — 树选择器
 
 ```vue
 <script setup>
@@ -142,16 +142,16 @@ import { treeSelectOptions } from '@tinyforged/china-region-cascade/naive-ui'
 </script>
 
 <template>
-  <!-- show-path displays full path like "Guangdong / Guangzhou / Liwan" -->
+  <!-- show-path 可显示完整路径，如 "广东省 / 广州市 / 荔湾区" -->
   <n-tree-select
     :options="treeSelectOptions"
-    placeholder="Select region"
+    placeholder="请选择地区"
     show-path
   />
 </template>
 ```
 
-### Naive UI — Separate Selects
+### Naive UI — 分开下拉框
 
 ```vue
 <script setup>
@@ -182,26 +182,26 @@ watch(city, () => { area.value = null })
 </script>
 
 <template>
-  <n-select v-model:value="province" :options="provinceOptions" placeholder="Province" />
+  <n-select v-model:value="province" :options="provinceOptions" placeholder="省/直辖市" />
   <n-select
     v-if="isThreeLevel"
     v-model:value="city"
     :options="cityOptions"
     :disabled="!province"
-    placeholder="City"
+    placeholder="市"
   />
   <n-select
     v-model:value="area"
     :options="isThreeLevel ? areaOptions : cityOptions"
     :disabled="isThreeLevel ? !city : !province"
-    placeholder="District"
+    :placeholder="isThreeLevel ? '区/县' : '区'"
   />
 </template>
 ```
 
-## Utility Functions
+## 工具函数
 
-Import from `@tinyforged/china-region-cascade/utils`:
+从 `@tinyforged/china-region-cascade/utils` 导入：
 
 ```ts
 import {
@@ -218,114 +218,114 @@ import {
 } from '@tinyforged/china-region-cascade/utils'
 ```
 
-### Find
+### 查找
 
 ```ts
-// Find a node by region code
+// 根据行政区划代码递归查找节点
 findByCode(regionOptions, '440000')
 // → { value: '440000', label: '广东省', children: [...] }
 
-// Find a node by region name
+// 根据行政区划名称递归查找节点
 findByLabel(regionOptions, '广东省')
 // → { value: '440000', label: '广东省', children: [...] }
 ```
 
-### Convert
+### 转换
 
 ```ts
-// Convert code path to label path
+// 根据代码路径获取名称路径
 getLabelsByCodes(regionOptions, ['440000', '440100', '440103'])
 // → ['广东省', '广州市', '荔湾区']
 
-// Convert label path to code path
+// 根据名称路径获取代码路径
 getCodesByLabels(regionOptions, ['广东省', '广州市', '荔湾区'])
 // → ['440000', '440100', '440103']
 ```
 
-### Children
+### 子级
 
 ```ts
-// Get nested children of a node
+// 获取指定节点的嵌套子级
 getChildren(regionOptions, '440000')
 // → [{ value: '440100', label: '广州市', children: [...] }, ...]
 
-// Get flat children of any node by code
+// 获取任意节点的扁平子级
 getFlatChildren('440000')
 // → [{ value: '440100', label: '广州市' }, { value: '440200', label: '韶关市' }, ...]
 ```
 
-### Flat Select Helpers
+### 扁平选择辅助
 
 ```ts
-// Get all provinces (flat)
+// 获取所有省级选项（扁平）
 getProvinces()
 // → [{ value: '110000', label: '北京市' }, { value: '440000', label: '广东省' }, ...]
 
-// Get cities under a province (flat)
+// 获取指定省的市级选项（扁平）
 getCities('440000')
 // → [{ value: '440100', label: '广州市' }, { value: '440200', label: '韶关市' }, ...]
 
-// Get areas under a city (flat)
+// 获取指定市的区县选项（扁平）
 getAreas('440100')
 // → [{ value: '440103', label: '荔湾区' }, { value: '440104', label: '越秀区' }, ...]
 
-// Check if a province has 3 levels (province → city → area)
-hasThreeLevels('440000') // true  (Guangdong)
-hasThreeLevels('110000') // false (Beijing — municipality, only 2 levels)
+// 判断省份是否为三级结构（省 → 市 → 区）
+hasThreeLevels('440000') // true  （广东省：省 → 市 → 区）
+hasThreeLevels('110000') // false （北京市：直辖市 → 区，仅两级）
 ```
 
-## Types
+## 类型
 
 ```ts
-/** Cascader option, compatible with Ant Design / Naive UI */
+/** 级联选项，兼容 Ant Design / Naive UI */
 interface RegionOption {
   value: string
   label: string
   children?: RegionOption[]
 }
 
-/** Flat option for Select components */
+/** 扁平选项，用于 Select 组件 */
 interface FlatOption {
   value: string
   label: string
 }
 ```
 
-## Exports
+## 导出
 
-| Sub-path    | Exports                                                                   |
+| 子路径      | 导出内容                                                                  |
 | ----------- | ------------------------------------------------------------------------- |
-| `.`         | `regionOptions`, types, all utility functions                             |
-| `/antd`     | `cascaderOptions`, `treeSelectOptions`, `provinceOptions`, select helpers |
-| `/naive-ui` | `cascaderOptions`, `treeSelectOptions`, `provinceOptions`, select helpers |
-| `/utils`    | All utility functions                                                     |
+| `.`         | `regionOptions`、类型、所有工具函数                                       |
+| `/antd`     | `cascaderOptions`、`treeSelectOptions`、`provinceOptions`、Select 辅助函数 |
+| `/naive-ui` | `cascaderOptions`、`treeSelectOptions`、`provinceOptions`、Select 辅助函数 |
+| `/utils`    | 所有工具函数                                                              |
 
-## Adding a New UI Library
+## 添加新的 UI 库
 
-The adapter architecture is designed for easy extension:
+适配器架构设计为易于扩展：
 
 ```text
 src/adapters/
 ├── antd/
-│   ├── cascader.ts      # Cascader data
-│   ├── tree-select.ts   # TreeSelect data
-│   ├── select.ts        # Separate Select data
-│   └── index.ts         # Re-export all
+│   ├── cascader.ts      # 级联选择器数据
+│   ├── tree-select.ts   # 树选择器数据
+│   ├── select.ts        # 分开下拉框数据
+│   └── index.ts         # 统一导出
 ├── naive-ui/
 │   ├── cascader.ts
 │   ├── tree-select.ts
 │   ├── select.ts
 │   └── index.ts
-└── your-lib/            # Add a new directory
+└── your-lib/            # 添加新目录即可
     ├── cascader.ts
     └── index.ts
 ```
 
-1. Create a new directory under `src/adapters/`
-2. Add component files with proper type mapping
-3. Create `index.ts` to re-export all components
-4. Add entry to `tsup.config.ts` and `package.json` exports
+1. 在 `src/adapters/` 下创建新目录
+2. 添加组件文件，做好字段映射
+3. 创建 `index.ts` 统一导出
+4. 在 `tsup.config.ts` 和 `package.json` exports 中添加入口
 
-## License
+## 许可证
 
 MIT © TinyForged
