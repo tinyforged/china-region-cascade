@@ -1,5 +1,7 @@
 # @tinyforged/china-region-cascade
 
+[![npm version](https://img.shields.io/npm/v/@tinyforged/china-region-cascade)](https://www.npmjs.com/package/@tinyforged/china-region-cascade) [![npm downloads](https://img.shields.io/npm/dm/@tinyforged/china-region-cascade)](https://www.npmjs.com/package/@tinyforged/china-region-cascade)
+
 [English](./README.md) | [中文](./README.zh-CN.md)
 
 ---
