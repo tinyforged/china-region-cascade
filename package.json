@@ -1,7 +1,7 @@
 {
   "name": "@tinyforged/china-region-cascade",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "packageManager": "pnpm@11.0.8",
   "description": "China region cascade data with adapters for Ant Design & Naive UI",
   "author": "TinyForged",
