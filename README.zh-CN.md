@@ -6,7 +6,7 @@
 
 ---
 
-中国行政区划级联数据，提供 **Ant Design**（React & Vue）、**Naive UI** 等主流 UI 框架的适配器。基于 [province-city-china](https://github.com/uiwjs/province-city-china) 构建，提供树形数据、扁平列表和工具函数。
+中国行政区划级联数据，提供 **Ant Design**（React & Vue）、**Element Plus**、**Naive UI** 等主流 UI 框架的适配器。基于 [province-city-china](https://github.com/uiwjs/province-city-china) 构建，提供树形数据、扁平列表和工具函数。
 
 ## 特性
 
@@ -124,6 +124,84 @@ watch(city, () => { area.value = undefined })
 
 > **提示：** 直辖市（北京、上海、天津、重庆）和港澳台只有两级结构（省 → 区），`hasThreeLevels()` 返回 `false`，此时隐藏中间的「市」下拉框，直接显示「省 → 区」。
 
+### Element Plus — 级联选择器
+
+```vue
+<script setup>
+import { cascaderOptions } from '@tinyforged/china-region-cascade/element-plus'
+</script>
+
+<template>
+  <el-cascader :options="cascaderOptions" placeholder="请选择地区" />
+</template>
+```
+
+### Element Plus — 树选择器
+
+```vue
+<script setup>
+import { treeSelectOptions } from '@tinyforged/china-region-cascade/element-plus'
+</script>
+
+<template>
+  <el-tree-select
+    :data="treeSelectOptions"
+    placeholder="请选择地区"
+    check-strictly
+    :render-after-expand="false"
+  />
+</template>
+```
+
+### Element Plus — 分开下拉框
+
+```vue
+<script setup>
+import { computed, ref, watch } from 'vue'
+import {
+  provinceOptions,
+  getCitiesForSelect,
+  getAreasForSelect,
+  hasThreeLevels,
+} from '@tinyforged/china-region-cascade/element-plus'
+
+const province = ref()
+const city = ref()
+const area = ref()
+
+const isThreeLevel = computed(() =>
+  province.value ? hasThreeLevels(province.value) : true,
+)
+const cityOptions = computed(() =>
+  province.value ? getCitiesForSelect(province.value) : [],
+)
+const areaOptions = computed(() =>
+  city.value ? getAreasForSelect(city.value) : [],
+)
+
+watch(province, () => { city.value = undefined; area.value = undefined })
+watch(city, () => { area.value = undefined })
+</script>
+
+<template>
+  <el-select v-model="province" placeholder="省/直辖市">
+    <el-option v-for="item in provinceOptions" :key="item.value" :label="item.label" :value="item.value" />
+  </el-select>
+  <el-select v-if="isThreeLevel" v-model="city" :disabled="!province" placeholder="市">
+    <el-option v-for="item in cityOptions" :key="item.value" :label="item.label" :value="item.value" />
+  </el-select>
+  <el-select
+    v-model="area"
+    :disabled="isThreeLevel ? !city : !province"
+    :placeholder="isThreeLevel ? '区/县' : '区'"
+  >
+    <el-option v-for="item in (isThreeLevel ? areaOptions : cityOptions)" :key="item.value" :label="item.label" :value="item.value" />
+  </el-select>
+</template>
+```
+
+> **提示：** 直辖市（北京、上海、天津、重庆）和港澳台只有两级结构（省 → 区），`hasThreeLevels()` 返回 `false`，此时隐藏中间的「市」下拉框，直接显示「省 → 区」。
+
 ### Naive UI — 级联选择器
 
 ```vue
@@ -207,8 +285,11 @@ watch(city, () => { area.value = null })
 
 ```ts
 import {
+  codesFromLabels,
   findByCode,
   findByLabel,
+  findRegionByCode,
+  findRegionByLabel,
   getAreas,
   getChildren,
   getCities,
@@ -216,8 +297,34 @@ import {
   getFlatChildren,
   getLabelsByCodes,
   getProvinces,
+  getRegionChildren,
   hasThreeLevels,
+  labelsFromCodes,
 } from '@tinyforged/china-region-cascade/utils'
+```
+
+### 便捷函数（无需传入 regionOptions）
+
+```ts
+// 将 code 数组转为名称字符串（用于回显展示）
+labelsFromCodes(['440000', '440100', '440103'])
+// → '广东省 / 广州市 / 荔湾区'
+
+// 将名称数组转为 code 数组
+codesFromLabels(['广东省', '广州市', '荔湾区'])
+// → ['440000', '440100', '440103']
+
+// 直接根据 code 查找节点
+findRegionByCode('440000')
+// → { value: '440000', label: '广东省', children: [...] }
+
+// 直接根据名称查找节点
+findRegionByLabel('广东省')
+// → { value: '440000', label: '广东省', children: [...] }
+
+// 直接获取子级
+getRegionChildren('440000')
+// → [{ value: '440100', label: '广州市', children: [...] }, ...]
 ```
 
 ### 查找
@@ -279,7 +386,7 @@ hasThreeLevels('110000') // false （北京市：直辖市 → 区，仅两级�
 ## 类型
 
 ```ts
-/** 级联选项，兼容 Ant Design / Naive UI */
+/** 级联选项，兼容 Ant Design / Element Plus / Naive UI */
 interface RegionOption {
   value: string
   label: string
@@ -295,12 +402,13 @@ interface FlatOption {
 
 ## 导出
 
-| 子路径      | 导出内容                                                                   |
-| ----------- | -------------------------------------------------------------------------- |
-| `.`         | `regionOptions`、类型、所有工具函数                                        |
-| `/antd`     | `cascaderOptions`、`treeSelectOptions`、`provinceOptions`、Select 辅助函数 |
-| `/naive-ui` | `cascaderOptions`、`treeSelectOptions`、`provinceOptions`、Select 辅助函数 |
-| `/utils`    | 所有工具函数                                                               |
+| 子路径          | 导出内容                                                                   |
+| --------------- | -------------------------------------------------------------------------- |
+| `.`             | `regionOptions`、类型、所有工具函数                                        |
+| `/antd`         | `cascaderOptions`、`treeSelectOptions`、`provinceOptions`、Select 辅助函数 |
+| `/element-plus` | `cascaderOptions`、`treeSelectOptions`、`provinceOptions`、Select 辅助函数 |
+| `/naive-ui`     | `cascaderOptions`、`treeSelectOptions`、`provinceOptions`、Select 辅助函数 |
+| `/utils`        | 所有工具函数                                                               |
 
 ## 添加新的 UI 库
 
@@ -313,6 +421,11 @@ src/adapters/
 │   ├── tree-select.ts   # 树选择器数据
 │   ├── select.ts        # 分开下拉框数据
 │   └── index.ts         # 统一导出
+├── element-plus/
+│   ├── cascader.ts
+│   ├── tree-select.ts
+│   ├── select.ts
+│   └── index.ts
 ├── naive-ui/
 │   ├── cascader.ts
 │   ├── tree-select.ts

@@ -1,5 +1,7 @@
 import type { RegionOption } from '../types'
 
+import { regionOptions } from '../data'
+
 /**
  * 根据行政区划代码递归查找节点
  * @param options 级联选项数据
@@ -34,4 +36,14 @@ export function findByLabel(options: RegionOption[], label: string): RegionOptio
         return found
     }
   }
+}
+
+/** 根据 code 直接查找节点（无需手动传入 regionOptions） */
+export function findRegionByCode(code: string): RegionOption | undefined {
+  return findByCode(regionOptions, code)
+}
+
+/** 根据名称直接查找节点（无需手动传入 regionOptions） */
+export function findRegionByLabel(label: string): RegionOption | undefined {
+  return findByLabel(regionOptions, label)
 }

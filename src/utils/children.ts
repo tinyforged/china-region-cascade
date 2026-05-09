@@ -1,5 +1,6 @@
 import type { RegionOption } from '../types'
 
+import { regionOptions } from '../data'
 import { findByCode } from './find'
 
 /**
@@ -11,4 +12,9 @@ import { findByCode } from './find'
 export function getChildren(options: RegionOption[], code: string): RegionOption[] {
   const item = findByCode(options, code)
   return item?.children ?? []
+}
+
+/** 根据 code 直接获取子级（无需手动传入 regionOptions） */
+export function getRegionChildren(code: string): RegionOption[] {
+  return getChildren(regionOptions, code)
 }

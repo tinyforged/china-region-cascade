@@ -6,7 +6,7 @@
 
 ---
 
-China administrative region cascade data with adapters for **Ant Design** (React & Vue), **Naive UI**, and more. Provides tree-structured data (`{ value, label, children }`), flat select data, and utility functions, built on top of [province-city-china](https://github.com/uiwjs/province-city-china).
+China administrative region cascade data with adapters for **Ant Design** (React & Vue), **Element Plus**, **Naive UI**, and more. Provides tree-structured data (`{ value, label, children }`), flat select data, and utility functions, built on top of [province-city-china](https://github.com/uiwjs/province-city-china).
 
 ## Features
 
@@ -124,6 +124,82 @@ watch(city, () => { area.value = undefined })
 </template>
 ```
 
+### Element Plus — Cascader
+
+```vue
+<script setup>
+import { cascaderOptions } from '@tinyforged/china-region-cascade/element-plus'
+</script>
+
+<template>
+  <el-cascader :options="cascaderOptions" placeholder="Select region" />
+</template>
+```
+
+### Element Plus — TreeSelect
+
+```vue
+<script setup>
+import { treeSelectOptions } from '@tinyforged/china-region-cascade/element-plus'
+</script>
+
+<template>
+  <el-tree-select
+    :data="treeSelectOptions"
+    placeholder="Select region"
+    check-strictly
+    :render-after-expand="false"
+  />
+</template>
+```
+
+### Element Plus — Separate Selects
+
+```vue
+<script setup>
+import { computed, ref, watch } from 'vue'
+import {
+  provinceOptions,
+  getCitiesForSelect,
+  getAreasForSelect,
+  hasThreeLevels,
+} from '@tinyforged/china-region-cascade/element-plus'
+
+const province = ref()
+const city = ref()
+const area = ref()
+
+const isThreeLevel = computed(() =>
+  province.value ? hasThreeLevels(province.value) : true,
+)
+const cityOptions = computed(() =>
+  province.value ? getCitiesForSelect(province.value) : [],
+)
+const areaOptions = computed(() =>
+  city.value ? getAreasForSelect(city.value) : [],
+)
+
+watch(province, () => { city.value = undefined; area.value = undefined })
+watch(city, () => { area.value = undefined })
+</script>
+
+<template>
+  <el-select v-model="province" placeholder="Province">
+    <el-option v-for="item in provinceOptions" :key="item.value" :label="item.label" :value="item.value" />
+  </el-select>
+  <el-select v-if="isThreeLevel" v-model="city" :disabled="!province" placeholder="City">
+    <el-option v-for="item in cityOptions" :key="item.value" :label="item.label" :value="item.value" />
+  </el-select>
+  <el-select
+    v-model="area"
+    :disabled="isThreeLevel ? !city : !province"
+    :placeholder="isThreeLevel ? 'District' : 'Area'"
+  >
+    <el-option v-for="item in (isThreeLevel ? areaOptions : cityOptions)" :key="item.value" :label="item.label" :value="item.value" />
+  </el-select>
+</template>
+```
+
 ### Naive UI — Cascader
 
 ```vue
@@ -207,8 +283,11 @@ Import from `@tinyforged/china-region-cascade/utils`:
 
 ```ts
 import {
+  codesFromLabels,
   findByCode,
   findByLabel,
+  findRegionByCode,
+  findRegionByLabel,
   getAreas,
   getChildren,
   getCities,
@@ -216,8 +295,34 @@ import {
   getFlatChildren,
   getLabelsByCodes,
   getProvinces,
+  getRegionChildren,
   hasThreeLevels,
+  labelsFromCodes,
 } from '@tinyforged/china-region-cascade/utils'
+```
+
+### Quick Helpers (no `regionOptions` needed)
+
+```ts
+// Convert code array to label string (for display)
+labelsFromCodes(['440000', '440100', '440103'])
+// → '广东省 / 广州市 / 荔湾区'
+
+// Convert label array to code array
+codesFromLabels(['广东省', '广州市', '荔湾区'])
+// → ['440000', '440100', '440103']
+
+// Find a node by code directly
+findRegionByCode('440000')
+// → { value: '440000', label: '广东省', children: [...] }
+
+// Find a node by label directly
+findRegionByLabel('广东省')
+// → { value: '440000', label: '广东省', children: [...] }
+
+// Get children by code directly
+getRegionChildren('440000')
+// → [{ value: '440100', label: '广州市', children: [...] }, ...]
 ```
 
 ### Find
@@ -279,7 +384,7 @@ hasThreeLevels('110000') // false (Beijing — municipality, only 2 levels)
 ## Types
 
 ```ts
-/** Cascader option, compatible with Ant Design / Naive UI */
+/** Cascader option, compatible with Ant Design / Element Plus / Naive UI */
 interface RegionOption {
   value: string
   label: string
@@ -295,12 +400,13 @@ interface FlatOption {
 
 ## Exports
 
-| Sub-path    | Exports                                                                   |
-| ----------- | ------------------------------------------------------------------------- |
-| `.`         | `regionOptions`, types, all utility functions                             |
-| `/antd`     | `cascaderOptions`, `treeSelectOptions`, `provinceOptions`, select helpers |
-| `/naive-ui` | `cascaderOptions`, `treeSelectOptions`, `provinceOptions`, select helpers |
-| `/utils`    | All utility functions                                                     |
+| Sub-path        | Exports                                                                   |
+| --------------- | ------------------------------------------------------------------------- |
+| `.`             | `regionOptions`, types, all utility functions                             |
+| `/antd`         | `cascaderOptions`, `treeSelectOptions`, `provinceOptions`, select helpers |
+| `/element-plus` | `cascaderOptions`, `treeSelectOptions`, `provinceOptions`, select helpers |
+| `/naive-ui`     | `cascaderOptions`, `treeSelectOptions`, `provinceOptions`, select helpers |
+| `/utils`        | All utility functions                                                     |
 
 ## Adding a New UI Library
 
@@ -313,6 +419,11 @@ src/adapters/
 │   ├── tree-select.ts   # TreeSelect data
 │   ├── select.ts        # Separate Select data
 │   └── index.ts         # Re-export all
+├── element-plus/
+│   ├── cascader.ts
+│   ├── tree-select.ts
+│   ├── select.ts
+│   └── index.ts
 ├── naive-ui/
 │   ├── cascader.ts
 │   ├── tree-select.ts

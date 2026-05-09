@@ -5,6 +5,7 @@ export default defineConfig({
     'index': 'src/index.ts',
     'adapters/antd/index': 'src/adapters/antd/index.ts',
     'adapters/naive-ui/index': 'src/adapters/naive-ui/index.ts',
+    'adapters/element-plus/index': 'src/adapters/element-plus/index.ts',
     'utils/index': 'src/utils/index.ts',
   },
   format: ['esm', 'cjs'],

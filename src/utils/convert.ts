@@ -1,5 +1,7 @@
 import type { RegionOption } from '../types'
 
+import { regionOptions } from '../data'
+
 /**
  * 根据行政区划代码路径获取对应的名称路径
  * @param options 级联选项数据
@@ -36,4 +38,14 @@ export function getCodesByLabels(options: RegionOption[], labels: string[]): str
     current = item.children ?? []
   }
   return codes
+}
+
+/** 将行政区划代码路径转为名称字符串（用分隔符连接） */
+export function labelsFromCodes(codes: string[], separator = ' / '): string {
+  return getLabelsByCodes(regionOptions, codes).join(separator)
+}
+
+/** 将行政区划名称路径转为代码数组 */
+export function codesFromLabels(labels: string[]): string[] {
+  return getCodesByLabels(regionOptions, labels)
 }

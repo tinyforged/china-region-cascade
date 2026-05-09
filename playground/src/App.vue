@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { Cascader as ACascader, Select as ASelect, TreeSelect as ATreeSelect } from 'ant-design-vue'
+import { ElCascader, ElSelect, ElTreeSelect } from 'element-plus'
 import { NCascader, NSelect, NTreeSelect } from 'naive-ui'
 
 import {
@@ -11,8 +12,16 @@ import {
   provinceOptions as antdProvinces,
   treeSelectOptions as antdTreeOptions,
 } from '@tinyforged/china-region-cascade/antd'
+import {
+  cascaderOptions as epCascaderOptions,
+  getAreasForSelect as epGetAreas,
+  getCitiesForSelect as epGetCities,
+  hasThreeLevels as epHasThreeLevels,
+  provinceOptions as epProvinces,
+  treeSelectOptions as epTreeOptions,
+} from '@tinyforged/china-region-cascade/element-plus'
 import { regionOptions } from '@tinyforged/china-region-cascade'
-import { getLabelsByCodes } from '@tinyforged/china-region-cascade/utils'
+import { labelsFromCodes } from '@tinyforged/china-region-cascade/utils'
 import {
   cascaderOptions as naiveCascaderOptions,
   getAreasForSelect as naiveGetAreas,
@@ -93,11 +102,130 @@ watch(naiveProvince, () => {
 watch(naiveCity, () => {
   naiveArea.value = null
 })
+
+// --- Element Plus Cascader ---
+const epCascaderValue = ref<string[]>([])
+
+// --- Element Plus TreeSelect ---
+const epTreeValue = ref<string>()
+const epTreePath = computed(() => {
+  if (!epTreeValue.value)
+    return ''
+  const codes = getAncestorCodes(epTreeValue.value)
+  return getLabelsByCodes(regionOptions, codes).join(' / ')
+})
+
+// --- Element Plus Separate Selects ---
+const epProvince = ref<string>()
+const epCity = ref<string>()
+const epArea = ref<string>()
+
+const epIsThreeLevel = computed(() => epProvince.value ? epHasThreeLevels(epProvince.value) : true)
+const epCityOptions = computed(() => epProvince.value ? epGetCities(epProvince.value) : [])
+const epAreaOptions = computed(() => epCity.value ? epGetAreas(epCity.value) : [])
+
+watch(epProvince, () => {
+  epCity.value = undefined
+  epArea.value = undefined
+})
+watch(epCity, () => {
+  epArea.value = undefined
+})
+
+// --- Code 回显名称 ---
+const codeInput = ref('440000, 440100, 440103')
+const resolvedLabels = computed(() => {
+  const codes = codeInput.value.split(',').map(s => s.trim()).filter(Boolean)
+  return labelsFromCodes(codes)
+})
 </script>
 
 <template>
   <div style="max-width: 700px; margin: 40px auto; padding: 0 20px; font-family: sans-serif;">
     <h2>China Region Cascade Playground</h2>
+
+    <!-- Code 回显名称 -->
+    <h3>Code 回显名称</h3>
+    <p style="color: #888; font-size: 13px;">
+      输入行政区划代码（逗号分隔），实时回显名称：
+    </p>
+    <input
+      v-model="codeInput"
+      placeholder="440000, 440100, 440103"
+      style="width: 100%; padding: 6px 10px; border: 1px solid #d9d9d9; border-radius: 4px; box-sizing: border-box;"
+    >
+    <p style="font-weight: 500;">
+      {{ resolvedLabels || '未匹配' }}
+    </p>
+
+    <hr style="margin: 30px 0; border-color: #eee;">
+
+    <!-- Element Plus -->
+    <h3>Element Plus — Cascader</h3>
+    <el-cascader
+      v-model="epCascaderValue"
+      :options="epCascaderOptions"
+      placeholder="请选择地区"
+      style="width: 100%"
+    />
+    <p>Selected: {{ epCascaderValue }}</p>
+
+    <h3>Element Plus — TreeSelect</h3>
+    <el-tree-select
+      v-model="epTreeValue"
+      :data="epTreeOptions"
+      placeholder="请选择地区"
+      check-strictly
+      :render-after-expand="false"
+      style="width: 100%"
+    />
+    <p>Selected: {{ epTreePath || epTreeValue }}</p>
+
+    <h3>Element Plus — Separate Selects</h3>
+    <div style="display: flex; gap: 8px;">
+      <el-select
+        v-model="epProvince"
+        placeholder="省/直辖市"
+        style="flex: 1"
+      >
+        <el-option
+          v-for="item in epProvinces"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        />
+      </el-select>
+      <el-select
+        v-if="epIsThreeLevel"
+        v-model="epCity"
+        placeholder="市"
+        :disabled="!epProvince"
+        style="flex: 1"
+      >
+        <el-option
+          v-for="item in epCityOptions"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        />
+      </el-select>
+      <el-select
+        v-model="epArea"
+        :placeholder="epIsThreeLevel ? '区/县' : '区'"
+        :disabled="epIsThreeLevel ? !epCity : !epProvince"
+        style="flex: 1"
+      >
+        <el-option
+          v-for="item in (epIsThreeLevel ? epAreaOptions : epCityOptions)"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        />
+      </el-select>
+    </div>
+    <p>Selected: {{ [epProvince, epCity, epArea].filter(Boolean) }}</p>
+
+    <hr style="margin: 30px 0; border-color: #eee;">
 
     <!-- Ant Design -->
     <h3>Ant Design — Cascader</h3>
@@ -146,7 +274,7 @@ watch(naiveCity, () => {
     </div>
     <p>Selected: {{ [antdProvince, antdCity, antdArea].filter(Boolean) }}</p>
 
-    <hr style="margin: 30px 0; border-color: #eee;" />
+    <hr style="margin: 30px 0; border-color: #eee;">
 
     <!-- Naive UI -->
     <h3>Naive UI — Cascader</h3>

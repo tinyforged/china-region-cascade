@@ -1,7 +1,7 @@
 {
   "name": "@tinyforged/china-region-cascade",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "packageManager": "pnpm@11.0.8",
   "description": "China region cascade data with adapters for Ant Design & Naive UI",
   "author": "TinyForged",
@@ -19,6 +19,7 @@
     "region",
     "cascade",
     "antd",
+    "element-plus",
     "naive-ui",
     "province",
     "city",
@@ -41,6 +42,10 @@
     "./naive-ui": {
       "import": "./dist/adapters/naive-ui/index.js",
       "require": "./dist/adapters/naive-ui/index.cjs"
+    },
+    "./element-plus": {
+      "import": "./dist/adapters/element-plus/index.js",
+      "require": "./dist/adapters/element-plus/index.cjs"
     },
     "./utils": {
       "import": "./dist/utils/index.js",

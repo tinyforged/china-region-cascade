@@ -9,6 +9,7 @@
   "dependencies": {
     "@tinyforged/china-region-cascade": "workspace:*",
     "ant-design-vue": "^4.2.6",
+    "element-plus": "^2.9.0",
     "naive-ui": "^2.41.0",
     "vue": "^3.5.0"
   },
